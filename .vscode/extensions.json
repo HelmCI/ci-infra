@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "casualjim.gotemplate",
+    "yzhang.markdown-all-in-one",
+    "wayou.vscode-todo-highlight",
+    "redhat.vscode-yaml",
+    "smoore.yaml-path",
+    "breadnaught.vscode-ignore",
+    "bmalehorn.vscode-fish"
+  ]
+}

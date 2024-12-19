@@ -1,6 +1,8 @@
 # postgresql
 
 - [.. HOME](../../../README.md)
+- [chart](../../../charts/postgresql/README.md)
+- [values template](postgresql.tpl)
 
 ## debug
 

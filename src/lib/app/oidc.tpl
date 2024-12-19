@@ -48,14 +48,11 @@ env:
   KC_HTTP_RELATIVE_PATH: /{{ $s.route }} 
 {{- end }}
   KC_DB: postgres
-  # KC_DB_URL: jdbc:postgresql://host.docker.internal/keycloak
-  KC_DB_URL: jdbc:postgresql://{{ default "sql1-hl.db" .Release.Store.sql }}/keycloak
+  KC_DB_URL: jdbc:postgresql://{{ or .Release.Store.sql "sql1-hl.db" }}/keycloak
   KC_DB_USERNAME: postgres
-  # KC_HEALTH_ENABLED: true
-  # KC_HOSTNAME: {{ $s.host }}
-
   KEYCLOAK_ADMIN: admin 
-  {{/* KEYCLOAK_ADMIN: {{ default "admin" (getenv "USER") }} */}}
+  {{/* KC_HOSTNAME: {{ $s.host }} */}}
+  {{/* KC_HEALTH_ENABLED: true */}}
   {{/* KC_METRICS_ENABLED: true */}}
 
 envFrom:

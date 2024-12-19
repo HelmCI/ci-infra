@@ -1,6 +1,8 @@
 # velero - backup operator
 
 - [.. HOME](../../../README.md)
+- [chart](../../../charts/velero/README.md)
+- [values template](velero.tpl)
 - https://gist.github.com/taking/3b2e511dbde79b9d9ab361f9fcbd7003
 - https://velero.io/docs/main/file-system-backup/
 - https://velero.io/docs/main/backup-reference/#schedule-a-backup

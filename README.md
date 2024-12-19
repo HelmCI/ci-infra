@@ -1,6 +1,6 @@
 # HelmwaveCI module - base Infrastructure
 
-- [base on core sub module with helmwave engine](ci/README.md)
+- [*base on core sub module with helmwave engine](ci/README.md)
 
 ## quick start 
 
@@ -28,3 +28,20 @@ make test_minio
 make test_nats
 make test_velero
 ```
+
+## docs
+
+- [ingress-nginx](src/lib/ingress-nginx/ingress.md)
+- [csi-driver-nfs](src/lib/csi-driver-nfs/csi-driver-nfs.md)
+- [postgresql](src/lib/postgresql/postgresql.md)
+- [mongodb](src/lib/mongodb/mongo.md)
+- [nats](src/lib/nats/nats.tpl)
+- [velero](src/lib/velero/velero.md)
+
+## values template
+
+- [imagepullsecret-patcher](src/lib/imagepullsecret-patcher/pull.tpl)
+- [local-path-provisioner](src/lib/local-path-provisioner/local-path.tpl)
+- [keycloak](src/lib/app/oidc.tpl)
+- [keycloak - bitnami](src/lib/keycloak/keycloak.tpl)
+- [minio](src/lib/minio/minio.tpl)

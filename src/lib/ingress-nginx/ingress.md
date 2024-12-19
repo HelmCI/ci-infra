@@ -1,6 +1,8 @@
 # ingress
 
 - [.. HOME](../../../README.md)
+- [chart](../../../charts/ingress-nginx/README.md)
+- [values template](ingress.tpl)
 
 ## opentelemetry
 
