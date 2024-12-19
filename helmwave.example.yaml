@@ -1,0 +1,358 @@
+# bin i -f github.com/helmwave/helmwave/releases/tag/v0.41.1
+version: 0.41.1
+# $K = k3d-local-infra - Kubernetes context
+# $R =  - Release suffix
+# $V =  - Version
+# $T =  - Tag (Release/Version)
+
+## YAML Anchors for reuse:
+.z:
+  - &demo # example yaml sugar
+    namespace: demo
+  - &default
+    context: k3d-local-infra
+    create_namespace: true
+    pending_release_strategy: uninstall # rollback
+    timeout: 30m # 5m
+    wait: true
+    offline_kube_version: 1.30.4
+
+## Rich pattern "current cluster by tags":
+# MODULES SRC:   [ci]
+# MODULES CHART: [ci]
+# Merge context in order:
+# COMMON  STORE:  file://./src/_.yml <- NOT exists
+# COMMON  SECRET: file://./.env.yml <- exists
+# CONTEXT SECRET: file://./.env-k3d-local-infra.yml <- NOT exists
+# DEPS:           file://./src/lib/infra.yml
+# DEPS:           file://./src/lib/local.yml
+# CONTEXT:        file://./src/k3d-local-infra.yml <- k3d-local-infra
+# NS: [db infra velero]
+# INGRESS: http://localhost
+.store: &store
+  _: src/_
+  _modules:
+      - ci
+  db:
+      postgres: pass
+  db_map: null
+  ingress:
+      allHosts: true
+      host: ""
+      host0: localhost
+      sheme: http
+      url: http://localhost
+  kube: k3d-local-infra
+  nats:
+      url: nats://nats.infra:4222
+  oidc:
+      route: auth
+      srv: oidc.infra:8080
+      url: http://localhost/auth
+  registry:
+      hostProxy: null
+      password: pass
+      proxy:
+          aws: ecr
+          chainguard: chainguard
+          docker: dhub
+          gcr: gcr
+          ghcr: ghcr
+          gitlab: glab
+          k8s: k8s
+          k8s-gcr: k8s-gcr
+          nvcr: nvcr
+          quay: quay
+          zalando: zalando
+  s3:
+      password: password
+      public: http://localhost:30001
+      url: minio.db:9000
+      user: admin
+
+releases:
+#  NS: db
+#   CHART: busybox
+  - <<: *default # RELEASE: "db-db"
+    namespace: db
+    name: db-db
+    chart: 
+      name: ci/charts/busybox
+      skip_dependency_update: true
+    tags: [k3d-local-infra, db, db-db, db@db-db, secret]
+    values: 
+      - src/lib/busybox/_db.tpl # file://./src/lib/busybox/_db.tpl
+      # file://./src/ns/db/busybox/_db.tpl
+      # file://./src/context/k3d-local-infra/db/busybox/_db.tpl
+      # file://./src/lib/busybox/db-db.tpl
+      # file://./src/ns/db/busybox/db-db.tpl
+      # file://./src/context/k3d-local-infra/db/busybox/db-db.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: _db
+
+  - <<: *default # RELEASE: "minio-db"
+    namespace: db
+    name: minio-db
+    chart: 
+      name: ci/charts/busybox
+      skip_dependency_update: true
+    tags: [k3d-local-infra, db, minio-db, db@minio-db, secret]
+    values: 
+      - src/lib/busybox/minio-db.tpl # file://./src/lib/busybox/minio-db.tpl
+      # file://./src/ns/db/busybox/minio-db.tpl
+      # file://./src/context/k3d-local-infra/db/busybox/minio-db.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: minio-db
+
+  - <<: *default # RELEASE: "minio-ingress"
+    namespace: db
+    name: minio-ingress
+    chart: 
+      name: ci/charts/busybox
+      skip_dependency_update: true
+    tags: [k3d-local-infra, db, minio-ingress, db@minio-ingress, proxy]
+    depends_on:
+      - name: minio
+        optional: true
+    values: 
+      - src/lib/busybox/minio-ingress.tpl # file://./src/lib/busybox/minio-ingress.tpl
+      # file://./src/ns/db/busybox/minio-ingress.tpl
+      # file://./src/context/k3d-local-infra/db/busybox/minio-ingress.tpl
+    store:
+      <<: *store
+      __: src/_
+      buckets:
+          - file
+      name: minio-ingress
+
+#   CHART: minio
+  - <<: *default # RELEASE: "minio"
+    namespace: db
+    name: minio
+    chart: 
+      name: charts/minio
+      skip_dependency_update: true
+    tags: [minio, db@minio]
+    depends_on:
+      - name: minio-db
+        optional: true
+      - name: local-path@infra
+        optional: true
+    values: 
+      - src/lib/minio/minio.tpl # file://./src/lib/minio/minio.tpl
+      # file://./src/ns/db/minio/minio.tpl
+      # file://./src/context/k3d-local-infra/db/minio/minio.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: minio
+      port: 30001
+
+#   CHART: postgresql
+  - <<: *default # RELEASE: "sql1"
+    namespace: db
+    name: sql1
+    chart: 
+      name: charts/postgresql
+      skip_dependency_update: true
+    tags: [k3d-local-infra, db, sql1, db@sql1, sql]
+    depends_on:
+      - name: db-db
+        optional: true
+      - name: local-path@infra
+        optional: true
+    values: 
+      - src/chart/postgresql/affinity-hostname.tpl # file://./src/chart/postgresql/affinity-hostname.tpl 
+      - src/lib/postgresql/postgresql.tpl # file://./src/lib/postgresql/postgresql.tpl
+      # file://./src/ns/db/postgresql/postgresql.tpl
+      # file://./src/context/k3d-local-infra/db/postgresql/postgresql.tpl
+      # file://./src/lib/postgresql/sql1.tpl
+      # file://./src/ns/db/postgresql/sql1.tpl
+      # file://./src/context/k3d-local-infra/db/postgresql/sql1.tpl
+    store:
+      <<: *store
+      __: src/_
+      db:
+          name: keycloak
+      name: postgresql
+      v: 16.3.0-debian-12-r13
+      write:
+          create: true
+          port: 30000
+
+#  NS: infra
+#   CHART: app
+  - <<: *default # RELEASE: "oidc"
+    namespace: infra
+    name: oidc
+    chart: 
+      name: ci/charts/app
+      skip_dependency_update: true
+    tags: [k3d-local-infra, infra, oidc, infra@oidc]
+    depends_on:
+      - name: db-infra
+        optional: true
+      - name: sql1@db
+        optional: true
+    values:
+      # file://./src/chart/app/helmwave.tpl
+      # file://./src/chart/app/volume-tz.tpl 
+      - src/lib/app/oidc.tpl # file://./src/lib/app/oidc.tpl
+      # file://./src/ns/infra/app/oidc.tpl
+      # file://./src/context/k3d-local-infra/infra/app/oidc.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: oidc
+
+#   CHART: busybox
+  - <<: *default # RELEASE: "db-infra"
+    namespace: infra
+    name: db-infra
+    chart: 
+      name: ci/charts/busybox
+      skip_dependency_update: true
+    tags: [k3d-local-infra, infra, db-infra, infra@db-infra, secret]
+    values: 
+      - src/lib/busybox/_db.tpl # file://./src/lib/busybox/_db.tpl
+      # file://./src/ns/infra/busybox/_db.tpl
+      # file://./src/context/k3d-local-infra/infra/busybox/_db.tpl
+      # file://./src/lib/busybox/db-infra.tpl
+      # file://./src/ns/infra/busybox/db-infra.tpl
+      # file://./src/context/k3d-local-infra/infra/busybox/db-infra.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: _db
+
+  - <<: *default # RELEASE: "nfs"
+    namespace: infra
+    name: nfs
+    chart: 
+      name: ci/charts/busybox
+      skip_dependency_update: true
+    tags: [nfs, infra@nfs]
+    values: 
+      - src/lib/busybox/nfs.tpl # file://./src/lib/busybox/nfs.tpl
+      # file://./src/ns/infra/busybox/nfs.tpl
+      # file://./src/context/k3d-local-infra/infra/busybox/nfs.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: nfs
+
+#   CHART: csi-driver-nfs
+  - <<: *default # RELEASE: "csi-driver-nfs"
+    namespace: infra
+    name: csi-driver-nfs
+    chart: 
+      name: charts/csi-driver-nfs
+      skip_dependency_update: true
+    tags: [csi-driver-nfs, infra@csi-driver-nfs, nfs]
+    values: 
+      - src/lib/csi-driver-nfs/csi-driver-nfs.tpl # file://./src/lib/csi-driver-nfs/csi-driver-nfs.tpl
+      # file://./src/ns/infra/csi-driver-nfs/csi-driver-nfs.tpl
+      # file://./src/context/k3d-local-infra/infra/csi-driver-nfs/csi-driver-nfs.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: csi-driver-nfs
+
+#   CHART: imagepullsecret-patcher
+  - <<: *default # RELEASE: "pull"
+    namespace: infra
+    name: pull
+    chart: 
+      name: charts/imagepullsecret-patcher
+      skip_dependency_update: true
+    tags: [pull, infra@pull]
+    values: 
+      - src/lib/imagepullsecret-patcher/pull.tpl # file://./src/lib/imagepullsecret-patcher/pull.tpl
+      # file://./src/ns/infra/imagepullsecret-patcher/pull.tpl
+      # file://./src/context/k3d-local-infra/infra/imagepullsecret-patcher/pull.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: pull
+
+#   CHART: ingress-nginx
+  - <<: *default # RELEASE: "ingress"
+    namespace: infra
+    name: ingress
+    chart: 
+      name: charts/ingress-nginx
+      skip_dependency_update: true
+    tags: [k3d-local-infra, infra, ingress, infra@ingress]
+    values: 
+      - src/lib/ingress-nginx/ingress.tpl # file://./src/lib/ingress-nginx/ingress.tpl
+      # file://./src/ns/infra/ingress-nginx/ingress.tpl
+      # file://./src/context/k3d-local-infra/infra/ingress-nginx/ingress.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: ingress
+
+#   CHART: local-path-provisioner
+  - <<: *default # RELEASE: "local-path"
+    namespace: infra
+    name: local-path
+    chart: 
+      name: charts/local-path-provisioner
+      skip_dependency_update: true
+    tags: [k3d-local-infra, infra, local-path, infra@local-path, init-1]
+    values: 
+      - src/lib/local-path-provisioner/local-path.tpl # file://./src/lib/local-path-provisioner/local-path.tpl
+      # file://./src/ns/infra/local-path-provisioner/local-path.tpl
+      # file://./src/context/k3d-local-infra/infra/local-path-provisioner/local-path.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: local-path
+
+#   CHART: nats
+  - <<: *default # RELEASE: "nats"
+    namespace: infra
+    name: nats
+    chart: 
+      name: charts/nats
+      skip_dependency_update: true
+    tags: [k3d-local-infra, infra, nats, infra@nats]
+    values: 
+      - src/lib/nats/nats.tpl # file://./src/lib/nats/nats.tpl
+      # file://./src/ns/infra/nats/nats.tpl
+      # file://./src/context/k3d-local-infra/infra/nats/nats.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: nats
+      natsbox: true
+
+#  NS: velero
+#   CHART: velero
+  - <<: *default # RELEASE: "velero"
+    namespace: velero
+    name: velero
+    chart: 
+      name: charts/velero
+      skip_dependency_update: true
+    tags: [velero, velero@velero]
+    depends_on:
+      - name: minio@db
+        optional: true
+    values: 
+      - src/lib/velero/velero.tpl # file://./src/lib/velero/velero.tpl
+      # file://./src/ns/velero/velero/velero.tpl
+      # file://./src/context/k3d-local-infra/velero/velero/velero.tpl
+    store:
+      <<: *store
+      __: src/_
+      name: velero
+
+
+## Simple pattern "multycluster by tags":
+
+## Example raw releases:

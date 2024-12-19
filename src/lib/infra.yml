@@ -1,0 +1,129 @@
+store:
+  # ver:
+  registry:
+    # host: reg.*
+    # user: admin
+    proxy: # prefix
+      docker:     dhub        # https://hub.docker.com
+      k8s:        k8s         # https://registry.k8s.io
+      k8s-gcr:    k8s-gcr     # https://k8s.gcr.io
+      gcr:        gcr         # https://gcr.io
+      ghcr:       ghcr        # https://ghcr.io
+      quay:       quay        # https://quay.io
+      aws:        ecr         # https://public.ecr.aws
+      nvcr:       nvcr        # https://nvcr.io
+      gitlab:     glab        # https://registry.gitlab.com
+      zalando:    zalando     # https://registry.opensource.zalan.do
+      chainguard: chainguard  # https://cgr.dev/chainguard
+
+  oidc:
+    srv: oidc.infra:8080
+    # realm: demo
+    # route: auth
+
+  # ingress:
+  #   allHosts: true
+  #   host: localhost
+  #   sheme: http
+
+  nats:
+    url: nats://nats.infra:4222
+
+  ## OPTIONAL:
+  # nfs:
+  #   class: nfs-s3
+  #   srv: 10.1.1.1
+  #   share: srv/s3
+  #   nfsvers: 4.2 # 4.1
+  #   subdir: pvc
+
+chart:
+  postgresql:
+    - affinity-hostname
+
+namespace:
+  infra:
+    manual: true
+    chart:
+      app:
+        oidc: # keycloak
+          manual: true
+          dep:
+            - db-infra  # secret
+            - sql1@db   # db
+            # - ingress
+          # v: 21.1.2
+      busybox:
+        db-infra:
+          base: _db
+          tags: &secret
+            - secret
+        nfs:
+          manual: true
+      imagepullsecret-patcher:
+        pull:
+      local-path-provisioner:
+        local-path: &dep_pull
+          # dep: &pull
+          #   - pull # registry
+          tags:
+            - init-1
+      ingress-nginx:
+        ingress:
+        # ingress: *dep_pull
+      csi-driver-nfs:
+        csi-driver-nfs:
+          manual: true
+          # dep: *pull
+          tags:
+            - nfs
+      nats:
+        nats:
+          # dep: *pull
+  db:
+    manual: true
+    chart:
+      busybox:
+        db-db:
+          base: _db
+          tags: *secret
+        minio-db:
+          tags: *secret
+        minio-ingress:
+          manual: true
+          tags:
+            - proxy
+          store:
+            buckets:
+              - file
+          dep:
+            - minio
+            # - ingress@infra   # ingress-controller
+      minio:
+        minio:
+          manual: true # for disable helm.sh/hook: post-install in test build
+          dep:
+            - minio-db          # secret
+            - local-path@infra  # PVC
+            # - ingress@infra   # ingress-controller
+      postgresql:
+        sql1:
+          # manual: true
+          dep:
+            - db-db             # secret
+            - local-path@infra  # PVC
+          base: postgresql
+          tags:
+            - sql
+          store:
+            write:
+              create: true # fix 
+              port: 30000
+  velero:
+    manual: true
+    chart:
+      velero:
+        velero:
+          dep:
+            - minio@db
+kind: lib

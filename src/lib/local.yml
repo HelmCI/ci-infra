@@ -1,0 +1,48 @@
+store:
+  ingress:
+    allHosts: true
+    host: localhost
+    sheme: http
+  oidc:
+    route: auth
+  s3:
+    user: admin
+    url: minio.db:9000
+    public: http://localhost:30001
+chart:
+  app:
+    - helmwave
+    - volume-tz
+namespace:
+  infra:
+    manual: false
+    chart:
+      imagepullsecret-patcher:
+        pull:
+          manual: true
+      nats:
+        nats:
+          store:
+            natsbox: true
+      app:
+        oidc:
+          manual: false
+  db:
+    manual: false
+    chart:
+      postgresql:
+        sql1:
+          store:
+            db:
+              name: keycloak
+          v: 16.3.0-debian-12-r13
+      minio:
+        minio:
+          store:
+            port: 30001
+      busybox:
+        minio-ingress:
+          manual: false
+deps:
+  - infra
+kind: lib
