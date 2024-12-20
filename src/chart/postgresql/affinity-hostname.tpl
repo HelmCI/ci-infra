@@ -1,6 +1,5 @@
 {{- $s := .Release.Store }}
-{{- with $s.write.host }}              
-primary: &primary
+{{- define "affinity" }}
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -11,8 +10,15 @@ primary: &primary
                 values:
                   - {{ . }}
 {{- end }}
+
+{{- with $s.write.host }}              
+primary:
+    {{- template "affinity" . }}
+{{- end }}
+
 {{- with $s.read }}              
   {{- with .host }}              
-readReplicas: *primary
+readReplicas: 
+    {{- template "affinity" . }}
   {{- end }}
 {{- end }}

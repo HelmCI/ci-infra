@@ -25,9 +25,9 @@ image:
   registry: {{ . }}
   repository: ci/{{ or $ci.NAME "postgresql" }}
 global: 
-  {{/* imageRegistry: {{ $repo }} */}}
   imagePullSecrets:
     - name: imagepullsecret-patcher
+  {{/* imageRegistry: {{ $repo }} */}}
 {{- end }}
 
 fullnameOverride: {{ .Release.Name }}
@@ -45,9 +45,6 @@ metrics:
   {{- end }}
 
 primary:  
-  {{/* persistence: &keep
-    annotations:
-      helm.sh/resource-policy: keep */}}
   podAnnotations:
     backup.velero.io/backup-volumes: data
   resourcesPreset: none # none, nano, micro, small, medium, large, xlarge, 2xlarge
@@ -56,7 +53,8 @@ primary:
     nodePorts:
       postgresql: {{ $w.port }}          
   extendedConfiguration: |-
-{{ template "conf" (dict "_" $ "conf" $w.conf) }}
+{{- template "conf" (dict "_" $ "conf" $w.conf) }}
+
 {{- if not $w.create }}
   pgHbaConfiguration: |- # disable for first run :(
     # TYPE DATABASE    USER ADDRESS     METHOD
@@ -69,7 +67,6 @@ primary:
 {{- if $r}}              
 architecture: replication
 readReplicas:
-  {{/* persistence: *keep */}}
   resourcesPreset: none
   replicaCount: {{ or $r.count 1 }}
   service:
@@ -77,5 +74,5 @@ readReplicas:
     nodePorts:
       postgresql: {{ $r.port }}  
   extendedConfiguration: |-
-{{ template "conf" (dict "_" $ "conf" $r.conf) }}
+{{- template "conf" (dict "_" $ "conf" $r.conf) }}
 {{- end }}
