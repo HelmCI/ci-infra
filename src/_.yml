@@ -1,0 +1,8 @@
+kind: store
+store: # example of default values that should be overridden in the secrets file://./../.env.yml
+  registry:
+    password: pass
+  db:
+    postgres: pass
+  s3:
+    password: password

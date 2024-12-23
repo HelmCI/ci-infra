@@ -1,5 +1,5 @@
-# bin i -f github.com/helmwave/helmwave/releases/tag/v0.41.1
-version: 0.41.1
+# bin i -f github.com/helmwave/helmwave/releases/tag/v0.41.2
+version: 0.41.2
 # $K = k3d-local-infra - Kubernetes context
 # $R =  - Release suffix
 # $V =  - Version
@@ -21,8 +21,8 @@ version: 0.41.1
 # MODULES SRC:   [ci]
 # MODULES CHART: [ci]
 # Merge context in order:
-# COMMON  STORE:  file://./src/_.yml <- NOT exists
-# COMMON  SECRET: file://./.env.yml <- exists
+# COMMON  STORE:  file://./src/_.yml <- exists
+# COMMON  SECRET: file://./.env.yml <- NOT exists
 # CONTEXT SECRET: file://./.env-k3d-local-infra.yml <- NOT exists
 # DEPS:           file://./src/lib/infra.yml
 # DEPS:           file://./src/lib/local.yml
