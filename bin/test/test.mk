@@ -27,6 +27,8 @@ test_up_sql:
 	helmwave up -t secret,local-path,sql
 test_up_ingress: 
 	helmwave up -t ingress
+test_up_system:
+	helmwave up -t local-path,ingress
 test_up_oidc:
 	helmwave up -t oidc
 test_up_minio:

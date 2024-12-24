@@ -1,6 +1,8 @@
 # https://github.com/kubernetes-csi/csi-driver-nfs
+{{- $r := .Release.Store.registry }}
+{{- with $r.hostProxy }}
 image:
-    baseRepo: {{ .Release.Store.registry.host }}/k8s
+    baseRepo: {{ . }}/{{ $r.proxy.k8s }}
     nfs:
         repository: /sig-storage/nfsplugin
     csiProvisioner:
@@ -13,3 +15,4 @@ image:
         repository: /sig-storage/csi-node-driver-registrar
     externalSnapshotter:
         repository: /sig-storage/snapshot-controller
+{{- end }}
