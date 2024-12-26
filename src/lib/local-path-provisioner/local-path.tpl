@@ -9,6 +9,8 @@ image:
   repository: {{ $repo }}/rancher/local-path-provisioner
 helperImage:
   repository: {{ $repo }}/library/busybox
+imagePullSecrets:
+  - name: imagepullsecret-patcher
 {{- end }}
 
 nameOverride: {{ .Release.Name }}
@@ -18,6 +20,3 @@ storageClass:
   reclaimPolicy: Retain
   defaultVolumeType: local
   pathPattern: "{{"{{ .PVC.Namespace }}-{{ .PVC.Name }}"}}"
-
-imagePullSecrets:
-  - name: imagepullsecret-patcher
