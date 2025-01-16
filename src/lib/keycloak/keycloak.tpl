@@ -2,9 +2,7 @@
 {{- $r := $s.registry }}
 
 image:
-  tag: 26.1.0-debian-12-r0
-  tag: 26.0.8-debian-12-r1
-  tag: {{ or $s.v "26.0.8" }}-{{ or $s.v_os "debian-12-r0" }} # https://hub.docker.com/r/bitnami/keycloak/tags
+  tag: {{ or $s.v (index $s.ver (or $s.image .Release.Name)) }}
   {{- with $r.hostProxy }} 
   registry: {{ $r.hostProxy }}
   repository: {{ $r.proxy.docker }}/bitnami/keycloak

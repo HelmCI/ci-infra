@@ -30,9 +30,9 @@ test_up_ingress:
 	helmwave up -t ingress
 test_up_system:
 	helmwave up -t local-path,ingress
-test_up_oidc: test_down_keycloak # test_sql_keycloak_recreate
+test_up_oidc: test_down_keycloak # test_down_oidc test_sql_keycloak_recreate
 	helmwave up -t oidc
-test_up_keycloak: test_down_oidc
+test_up_keycloak: test_down_oidc # test_down_keycloak test_sql_keycloak_recreate
 	helmwave up -t keycloak
 test_up_minio:
 	helmwave up -t minio,minio-ingress
@@ -52,6 +52,7 @@ test_sql_cmd = PGHOST=localhost PGPORT=30000 PGPASSWORD=pass psql
 test_sql_list_dbs:
 	$(test_sql_cmd) -l
 test_sql_keycloak_recreate:
+	@echo -e "The $(RED)keycloak$(NORMAL) database will be deleted! Press enter to continue ..."; read
 	$(test_sql_cmd) -c "drop   database if exists keycloak" 
 	$(test_sql_cmd) -c "create database 					keycloak" 
 

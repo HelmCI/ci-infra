@@ -1,7 +1,26 @@
 kind: store
 store: # example of default values that should be overridden in the secrets file://./../.env.yml
   ver:
-    oidc: 26.0.8
+    # oidc:     18.0.2
+    # oidc:     19.0.3
+    # oidc:     20.0.5
+    # oidc:     21.1.2
+    # oidc:     22.0.5
+    # oidc:     23.0.7
+    # oidc:     24.0.5
+    # oidc:     25.0.6
+    oidc:     26.0.8 # https://quay.io/repository/keycloak/keycloak?tab=tags
+    # keycloak: 18.0.2-debian-11-r28 # not exist /opt/bitnami/keycloak/data
+    # keycloak: 19.0.3-debian-11-r22 # amd only
+    # keycloak: 20.0.5-debian-11-r13
+    # keycloak: 21.1.2-debian-11-r27
+    # keycloak: 22.0.5-debian-11-r7
+    # keycloak: 23.0.7-debian-12-r5
+    # keycloak: 24.0.5-debian-12-r8
+    # keycloak: 25.0.6-debian-12-r4
+    keycloak: 26.0.8-debian-12-r0 # https://hub.docker.com/r/bitnami/keycloak/tags
+    # keycloak: 26.0.8-debian-12-r1
+    # keycloak: 26.1.0-debian-12-r0
   db:
     postgres: pass
   registry:
