@@ -46,16 +46,21 @@ namespace:
     manual: true
     chart:
       app:
-        oidc: # keycloak
+        oidc: &keycloak
           manual: true
           dep:
             - db-infra  # secret
             - sql1@db   # db
             # - ingress
-          # v: 21.1.2
+          # v: 26.0.8
       keycloak:
+        # keycloak: *keycloak
         keycloak:
           manual: true
+          dep:
+            - db-infra  # secret
+            - sql1@db   # db
+            - ingress
       busybox:
         db-infra:
           base: _db

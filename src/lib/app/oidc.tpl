@@ -1,12 +1,11 @@
-# https://www.keycloak.org/getting-started/getting-started-docker
-# https://www.keycloak.org/server/containers
-{{- $store := .Release.Store }}
-{{- $_     := $store._ }}
-{{- $r     := $store.registry }}
-{{- $s     := $store.oidc }}
+{{- $s := .Release.Store }}
+{{- $_ := $s._ }}
+{{- $r := $s.registry }}
+{{- $oidc := $s.oidc }}
+version: &version {{ or $s.v (index $s.ver (or $s.image .Release.Name)) }}
 nameOverride: oidc
 image:
-  tag: {{ or $store.v "18.0.2" }}
+  tag: *version
   repository: quay.io/keycloak/keycloak
   {{- with $r.hostProxy }}
   repository: {{ . }}/{{ $r.proxy.quay }}/keycloak/keycloak
@@ -44,14 +43,14 @@ livenessProbe:
   periodSeconds: 10
   failureThreshold: 3
 env:
-{{- if $s.route }}
-  KC_HTTP_RELATIVE_PATH: /{{ $s.route }} 
+{{- if $oidc.route }}
+  KC_HTTP_RELATIVE_PATH: /{{ $oidc.route }} 
 {{- end }}
   KC_DB: postgres
   KC_DB_URL: jdbc:postgresql://{{ or .Release.Store.sql "sql1-hl.db" }}/keycloak
   KC_DB_USERNAME: postgres
   KEYCLOAK_ADMIN: admin 
-  {{/* KC_HOSTNAME: {{ $s.host }} */}}
+  {{/* KC_HOSTNAME: {{ $oidc.host }} */}}
   {{/* KC_HEALTH_ENABLED: true */}}
   {{/* KC_METRICS_ENABLED: true */}}
 
@@ -59,7 +58,8 @@ envFrom:
   secret:
     db:
       KC_DB_PASSWORD: postgres
-      KEYCLOAK_ADMIN_PASSWORD: postgres
+      KEYCLOAK_ADMIN_PASSWORD: oidc
+
 service:
   port: *port
   {{/* annotations:
@@ -71,9 +71,9 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
   hosts:
-    - host: {{ $s.host }}
+    - host: {{ $oidc.host }}
       paths:
-      - path: /{{ $s.route }} {{- if $s.route -}} / {{- end }}
+      - path: /{{ $oidc.route }} {{- if $oidc.route -}} / {{- end }}
         pathType: Prefix
 
 args: ["start-dev"]

@@ -1,7 +1,9 @@
+{{- $s := .Release.Store }}
 Secret:
   metadata:
     name: db
     labels:
       backup: secret
   stringData:
-    postgres: {{ .Release.Store.db.postgres }}
+    postgres: {{ $s.db.postgres }}
+    oidc: {{ or $s.oidc.password $s.db.postgres }}
