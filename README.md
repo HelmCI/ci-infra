@@ -34,6 +34,7 @@ make test_velero
 - [ingress-nginx](src/lib/ingress-nginx/ingress.md)
 - [csi-driver-nfs](src/lib/csi-driver-nfs/csi-driver-nfs.md)
 - [postgresql](src/lib/postgresql/postgresql.md)
+- [keycloak - bitnami](src/lib/keycloak/keycloak.md)
 - [mongodb](src/lib/mongodb/mongo.md)
 - [nats](src/lib/nats/nats.tpl)
 - [velero](src/lib/velero/velero.md)
@@ -43,5 +44,4 @@ make test_velero
 - [imagepullsecret-patcher](src/lib/imagepullsecret-patcher/pull.tpl)
 - [local-path-provisioner](src/lib/local-path-provisioner/local-path.tpl)
 - [keycloak](src/lib/app/oidc.tpl)
-- [keycloak - bitnami](src/lib/keycloak/keycloak.tpl)
 - [minio](src/lib/minio/minio.tpl)

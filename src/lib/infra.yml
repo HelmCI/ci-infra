@@ -53,6 +53,9 @@ namespace:
             - sql1@db   # db
             # - ingress
           # v: 21.1.2
+      keycloak:
+        keycloak:
+          manual: true
       busybox:
         db-infra:
           base: _db
