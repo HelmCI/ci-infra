@@ -1,5 +1,5 @@
 default:
 
-include bin/test/*.mk
- include  ci/bin/*.mk
--include     bin/*.mk
+ include   ci/bin/*.mk
+-include      bin/*.mk
+-include bin/test/*.mk
