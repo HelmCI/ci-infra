@@ -5,7 +5,7 @@
 fullnameOverride: ingress
 controller:
   {{- with $s.node }}
-  nodeSelector: 
+  nodeSelector:
     kubernetes.io/hostname: {{ . }}
   {{- end }}
 
@@ -47,3 +47,8 @@ controller:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "10254"
+
+{{- with $s.extraArgs }}
+  extraArgs:
+{{ toYAML . | indent 4 }}
+{{- end }}

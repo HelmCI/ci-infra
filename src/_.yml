@@ -29,3 +29,6 @@ store: # example of default values that should be overridden in the secrets file
     password: pass
   s3:
     password: password
+  # ssl:
+  #   crt: |-
+  #     -----BEGIN CERTIFICATE-----

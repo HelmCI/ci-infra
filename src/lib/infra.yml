@@ -68,6 +68,8 @@ namespace:
             - secret
         nfs:
           manual: true
+        ssl:
+          manual: true
       imagepullsecret-patcher:
         pull:
       local-path-provisioner:
@@ -78,6 +80,9 @@ namespace:
             - init-1
       ingress-nginx:
         ingress:
+          # store:
+          #   extraArgs:
+          #     default-ssl-certificate: infra/ssl
         # ingress: *dep_pull
       csi-driver-nfs:
         csi-driver-nfs:
@@ -125,7 +130,7 @@ namespace:
             - sql
           store:
             write:
-              create: true # fix 
+              create: true # fix
               port: 30000
   velero:
     manual: true
