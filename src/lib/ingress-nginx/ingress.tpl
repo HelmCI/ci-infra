@@ -25,6 +25,15 @@ controller:
   image:
     registry: {{ $k8s }}
   {{- end }}
+  {{- with $s.v }}
+    tag: {{ . }}
+    {{- with $s.digest }}
+    digest: {{ . }}
+    {{- else }}
+    digest:
+    {{- end }}
+  {{- end }}
+
   config: # https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/
     proxy-buffer-size: "128k" # fix: upstream sent too big header while reading response header from upstream
     large-client-header-buffers: "4 128k"

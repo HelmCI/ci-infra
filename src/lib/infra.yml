@@ -80,6 +80,7 @@ namespace:
             - init-1
       ingress-nginx:
         ingress:
+          v: v1.11.5 # TODO: find solutions for redirects in version 1.12
           # store:
           #   extraArgs:
           #     default-ssl-certificate: infra/ssl
