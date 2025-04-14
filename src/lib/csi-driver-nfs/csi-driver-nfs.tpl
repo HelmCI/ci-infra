@@ -2,7 +2,7 @@
 {{- $r := .Release.Store.registry }}
 {{- with $r.hostProxy }}
 image:
-    baseRepo: {{ . }}/{{ $r.proxy.k8s }}
+    baseRepo: {{ . }}/{{ $r.proxy.registry_k8s_io }}
     nfs:
         repository: /sig-storage/nfsplugin
     csiProvisioner:

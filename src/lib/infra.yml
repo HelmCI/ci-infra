@@ -4,17 +4,17 @@ store:
     # host: reg.*
     # user: admin
     proxy: # prefix
-      docker:     dhub        # https://hub.docker.com
-      k8s:        k8s         # https://registry.k8s.io
-      k8s-gcr:    k8s-gcr     # https://k8s.gcr.io
-      gcr:        gcr         # https://gcr.io
-      ghcr:       ghcr        # https://ghcr.io
-      quay:       quay        # https://quay.io
-      aws:        ecr         # https://public.ecr.aws
-      nvcr:       nvcr        # https://nvcr.io
-      gitlab:     glab        # https://registry.gitlab.com
-      zalando:    zalando     # https://registry.opensource.zalan.do
-      chainguard: chainguard  # https://cgr.dev/chainguard
+      docker:                       dhub        # https://hub.docker.com
+      registry_k8s_io:              k8s         # https://registry.k8s.io
+      k8s_gcr_io:                   k8s-gcr     # https://k8s.gcr.io
+      quay_io:                      quay        # https://quay.io
+      ghcr_io:                      ghcr        # https://ghcr.io
+      gcr_io:                       gcr         # https://gcr.io
+      nvcr_io:                      nvcr        # https://nvcr.io
+      public_ecr_aws:               ecr         # https://public.ecr.aws
+      registry_gitlab_com:          glab        # https://registry.gitlab.com
+      registry_opensource_zalan_do: zalando     # https://registry.opensource.zalan.do
+      cgr_dev:                      chainguard  # https://cgr.dev/chainguard
 
   oidc:
     srv: oidc.infra:8080

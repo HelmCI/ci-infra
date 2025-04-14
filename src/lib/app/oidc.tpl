@@ -8,7 +8,7 @@ image:
   tag: *version
   repository: quay.io/keycloak/keycloak
   {{- with $r.hostProxy }}
-  repository: {{ . }}/{{ $r.proxy.quay }}/keycloak/keycloak
+  repository: {{ . }}/{{ $r.proxy.quay_io }}/keycloak/keycloak
   {{- end }}
 strategy:
   type: Recreate
@@ -44,12 +44,12 @@ livenessProbe:
   failureThreshold: 3
 env:
 {{- if $oidc.route }}
-  KC_HTTP_RELATIVE_PATH: /{{ $oidc.route }} 
+  KC_HTTP_RELATIVE_PATH: /{{ $oidc.route }}
 {{- end }}
   KC_DB: postgres
   KC_DB_URL: jdbc:postgresql://{{ or .Release.Store.sql "sql1-hl.db" }}/keycloak
   KC_DB_USERNAME: postgres
-  KEYCLOAK_ADMIN: admin 
+  KEYCLOAK_ADMIN: admin
   {{/* KC_HOSTNAME: {{ $oidc.host }} */}}
   {{/* KC_HEALTH_ENABLED: true */}}
   {{/* KC_METRICS_ENABLED: true */}}

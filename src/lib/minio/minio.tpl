@@ -1,13 +1,13 @@
 {{- $s := .Release.Store }}
 {{- $r := $s.registry }}
-{{- $repo := print $r.hostProxy "/" $r.proxy.quay "/minio" }}
+{{- $repo := print $r.hostProxy "/" $r.proxy.quay_io "/minio" }}
 
 {{- with $r.hostProxy }}
 image:
   repository: {{ $repo }}/minio
 mcImage:
   repository: {{ $repo }}/mc
-imagePullSecrets: 
+imagePullSecrets:
   - name: imagepullsecret-patcher
 {{- end }}
 
@@ -37,7 +37,7 @@ resources:
 
 service:
   type: NodePort
-  nodePort: {{ or $s.port "32000" }} 
+  nodePort: {{ or $s.port "32000" }}
 {{- with $s.portConsole }}
 consoleService:
   type: NodePort
@@ -46,7 +46,7 @@ consoleService:
 
 ingress: &ingress
   enabled: false
-  hosts: 
+  hosts:
     - {{ $s.ingress.host | quote }}
   path: /file/
   ingressClassName: nginx
@@ -55,7 +55,7 @@ consoleIngress:
   enabled: true
   path: /minio/(.*)
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1    
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/proxy-body-size: 100m # https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#custom-max-body-size 413 Request Entity Too Large
 environment:
   MINIO_BROWSER_REDIRECT_URL: {{ $s.ingress.url }}/minio/

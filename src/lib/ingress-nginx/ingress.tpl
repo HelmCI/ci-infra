@@ -1,6 +1,6 @@
 {{- $s    := .Release.Store }}
 {{- $r    := $s.registry }}
-{{- $k8s  := print $r.hostProxy "/" $r.proxy.k8s }}
+{{- $k8s  := print $r.hostProxy "/" $r.proxy.registry_k8s_io }}
 
 fullnameOverride: ingress
 controller:
