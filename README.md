@@ -1,6 +1,6 @@
 # HelmwaveCI module - base Infrastructure
 
-- [*base on core sub module with helmwave engine](ci/README.md)
+Base on [core](https://github.com/HelmCI/ci) ["sub"](ci/README.md) module with [helmwave](https://github.com/helmwave/helmwave) [engine](https://github.com/HelmCI/ci/blob/main/helmwave/helmwave.tpl).
 
 ## quick start 
 
