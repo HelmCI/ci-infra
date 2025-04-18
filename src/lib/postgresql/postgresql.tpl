@@ -17,17 +17,20 @@
   {{- $ci := (index (readFile $file | fromYaml) ".image-postgresql").variables }}
 {{- end }}
 
+global:
+  security:
+    allowInsecureImages: true
+  {{- with $repo }}
+  imagePullSecrets:
+    - name: imagepullsecret-patcher
+  {{- end }}
+
 image:
   tag: {{ or $store.v "15.5.0-debian-11-r25" }} # https://hub.docker.com/r/bitnami/postgresql/tags
   {{/* tag: {{ or $store.v $ci.VER }} */}} # TODO: up all dbs
-
 {{- with $repo }}
   registry: {{ . }}
   repository: ci/{{ or $ci.NAME "postgresql" }}
-global: 
-  imagePullSecrets:
-    - name: imagepullsecret-patcher
-  {{/* imageRegistry: {{ $repo }} */}}
 {{- end }}
 
 fullnameOverride: {{ .Release.Name }}
@@ -44,14 +47,14 @@ metrics:
     registry: {{ $dhub }}
   {{- end }}
 
-primary:  
+primary:
   podAnnotations:
     backup.velero.io/backup-volumes: data
   resourcesPreset: none # none, nano, micro, small, medium, large, xlarge, 2xlarge
   service:
     type: NodePort
     nodePorts:
-      postgresql: {{ $w.port }}          
+      postgresql: {{ $w.port }}
   extendedConfiguration: |-
 {{- template "conf" (dict "_" $ "conf" $w.conf) }}
 
@@ -64,7 +67,7 @@ primary:
     host   all         all  0.0.0.0/0   md5
 {{- end }}
 
-{{- if $r}}              
+{{- if $r}}
 architecture: replication
 readReplicas:
   resourcesPreset: none
@@ -72,7 +75,7 @@ readReplicas:
   service:
     type: NodePort
     nodePorts:
-      postgresql: {{ $r.port }}  
+      postgresql: {{ $r.port }}
   extendedConfiguration: |-
 {{- template "conf" (dict "_" $ "conf" $r.conf) }}
 {{- end }}
