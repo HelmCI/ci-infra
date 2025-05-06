@@ -1,6 +1,10 @@
 {{- $s := .Release.Store }}
 {{- $r := $s.registry }}
 
+global:
+  security:
+    allowInsecureImages: true
+    
 image:
   tag: {{ or $s.v (index $s.ver (or $s.image .Release.Name)) }}
   {{- with $r.hostProxy }} 
