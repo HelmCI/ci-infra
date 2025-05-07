@@ -21,6 +21,11 @@ store: # example of default values that should be overridden in the secrets file
     keycloak: 26.0.8-debian-12-r0 # https://hub.docker.com/r/bitnami/keycloak/tags
     # keycloak: 26.0.8-debian-12-r1
     # keycloak: 26.1.0-debian-12-r0
+
+  secrets: # need move to .env-k3d-local-infra.yml
+    db: # = NS
+      clickhouse: pass
+
   db:
     postgres: pass
   registry:
@@ -29,6 +34,7 @@ store: # example of default values that should be overridden in the secrets file
     password: pass
   s3:
     password: password
+
   # ssl:
   #   crt: |-
   #     -----BEGIN CERTIFICATE-----

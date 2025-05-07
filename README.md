@@ -40,6 +40,7 @@ make test_velero
 - [mongodb](src/lib/mongodb/mongo.md)
 - [nats](src/lib/nats/nats.tpl)
 - [velero](src/lib/velero/velero.md)
+- [clickhouse](src/lib/clickhouse/clickhouse.md)
 
 ## values template
 

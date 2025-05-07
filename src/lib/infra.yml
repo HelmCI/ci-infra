@@ -40,7 +40,9 @@ store:
 chart:
   postgresql:
     - affinity-hostname
-
+.z:
+  manual: &manual
+    manual: true
 namespace:
   infra:
     manual: true
@@ -66,10 +68,8 @@ namespace:
           base: _db
           tags: &secret
             - secret
-        nfs:
-          manual: true
-        ssl:
-          manual: true
+        nfs: *manual
+        ssl: *manual
       imagepullsecret-patcher:
         pull:
       local-path-provisioner:
@@ -98,6 +98,7 @@ namespace:
     manual: true
     chart:
       busybox:
+        secrets:
         db-db:
           base: _db
           tags: *secret
@@ -133,6 +134,11 @@ namespace:
             write:
               create: true # fix
               port: 30000
+      clickhouse:
+        clickhouse:
+          manual: true
+          dep:
+            - secrets
   velero:
     manual: true
     chart:
