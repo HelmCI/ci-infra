@@ -70,7 +70,7 @@ Return the path Keycloak is hosted on. This looks at httpRelativePath and return
     /custom/ -> /custom/ (unchanged)
 */}}
 {{- define "keycloak.httpPath" -}}
-{{ ternary .Values.httpRelativePath (printf "%s%s" .Values.httpRelativePath "/") (hasSuffix "/" .Values.httpRelativePath) }}
+{{ ternary .Values.httpRelativePath (printf "%s%s" .Values.httpRelativePath "/") (strings.HasSuffix "/" .Values.httpRelativePath) }}
 {{- end -}}
 
 {{/*
